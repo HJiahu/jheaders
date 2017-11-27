@@ -9,12 +9,13 @@ INIT_EZLOG
 int main()
 {
     EZLOG (jh::Log_level::DBUG) << jh::format ("hello{0}", " word").c_str();
-    auto re = jh::list_dir ("G:/jhtools_vs2013", jh::FileType::ALL);
+    auto re = jh::list_dir ("./", jh::FileType::ALL);
     
     for (auto x : re)
     {
         cout << x << endl;
     }
-    
+#ifdef _MSC_VER    
     system ("pause");
+#endif
 }
