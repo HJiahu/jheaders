@@ -26,16 +26,15 @@ namespace jheaders
 {
     //usage: EZLOG(level)<<"hello"<<"word"<<"!";
     //Macro EZLOG depends on EZlog::log() and will append file and line number where EZLOG was called
-#define EZLOG(level) \
-	jheaders::EZlog::create_logstream(level,std::string(" [")+__FILE__+": "+std::to_string(__LINE__)+"]")
+#define EZLOG(level) jheaders::EZlog::create_logstream(level,std::string(" [")+__FILE__+": "+std::to_string(__LINE__)+"]")
     
 #ifdef _DEBUG
-#define EZLOG_D(msg) \
-	jheaders::EZlog::Instance().log_debug(msg+std::string(" [")+__FILE__+": "+std::to_string(__LINE__)+"]")
+    #define EZLOG_D(msg) jheaders::EZlog::Instance().log_debug(msg+std::string(" [")+__FILE__+": "+std::to_string(__LINE__)+"]")
 #else
-#define EZLOG_D(msg)  ;
+    #define EZLOG_D(msg)  ;
 #endif //EZLOG_DEBUG_DO_NOTHING
     
+#define EZAssert(expr) bool(expr) || EZLOG(jheaders::Log_level::FATAL)<<"assert failed: "#expr<<". msg: "
     
     //return a string like: 2017-11-27 17:33:52
     inline std::string current_time_YMDT();
