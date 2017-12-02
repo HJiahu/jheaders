@@ -1,5 +1,5 @@
 ﻿#ifndef JH_PATH_H_
-#define JH_PATH_H
+#define JH_PATH_H_
 
 #include"3rdparty/path.h"
 #include"ezlog.h"

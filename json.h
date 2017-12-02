@@ -1,4 +1,7 @@
-﻿#include<map>
+﻿#ifndef JH_JSON_H_
+#define JH_JSON_H_
+
+#include<map>
 #include<string>
 #include<fstream>
 #include<sstream>
@@ -72,3 +75,5 @@ namespace jheaders
         return  parse_simple_json_str (contents);
     }
 }
+
+#endif

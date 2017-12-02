@@ -1,5 +1,5 @@
-﻿#ifndef EZLOG_h_
-#define EZLOG_h_
+﻿#ifndef EZLOG_H_
+#define EZLOG_H_
 
 #include<cstdio>
 #include<ctime>
