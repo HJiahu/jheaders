@@ -165,7 +165,7 @@ namespace TinyPath
 #endif
             }
             
-			//
+			//suffix has .  eg. for lena.jpg this fun will return .jpg
             std::string extension() const
             {
                 const std::string &name = filename();

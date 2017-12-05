@@ -1,6 +1,8 @@
 ﻿#ifndef JH_PATH_H_
 #define JH_PATH_H_
 
+#include<algorithm>
+#include<functional>
 #include"3rdparty/path.h"
 #include"ezlog.h"
 
@@ -14,9 +16,18 @@ namespace jheaders
     inline bool is_regular_file (const path&p);
     inline size_t file_size (const path&p);
     inline bool exists (const path&p);
-    enum class FileType { ALL, FILE, DIR };//type for list in list_dir
-    static std::vector<std::string> list_dir (const path& p, FileType type = FileType::FILE); //return file or dir name in folder p
-    
+    enum class FileType { ALL, FILE, DIR };//type for list in list_d
+    //for directory do not return . and ..
+    //return file or dir name in folder p
+    inline std::vector<std::string> list_dir (const path& p, FileType type = FileType::FILE);
+    //return regular file name with extend of suffix ,eg. *.jpg
+    //use op to check file or dir name
+    inline std::vector<std::string> list_dir (const path&p, std::function<bool (const std::string) > op);
+    //return file name with extension ,extension string eg .jpg .txt .log
+    //auto convert file extension to lower eg .Jpg -> .jpg
+    inline std::vector<std::string> list_dir (const path&p, std::string extension);
+    //return file name with extension in extensions, extension has point
+    inline std::vector<std::string> list_dir (const path&p, std::vector<std::string> extensions);
     
     
     
@@ -51,11 +62,10 @@ namespace jheaders
 #endif
     }
     //list directory
-    //for directory do not return . and ..
 #if defined(_WIN32)
     //for directory do not return . and ..
 #include <windows.h>
-    static std::vector<std::string> list_dir (const path& p, FileType type)
+    inline std::vector<std::string> list_dir (const path& p, FileType type)
     {
         if (!exists (p))
         {
@@ -196,6 +206,53 @@ namespace jheaders
         return files;
     }
 #endif
+    
+    inline std::vector<std::string> list_dir (const path&p, std::function<bool (const std::string) > op)
+    {
+        std::vector<std::string> file_names;
+        auto all_fles = list_dir (p, FileType::ALL);
+        
+        for (auto&f : all_fles)
+        {
+            if (op (f))
+            {
+                file_names.push_back (f);
+            }
+        }
+        
+        return file_names;
+    }
+    
+    inline std::vector<std::string> list_dir (const path&p, std::vector<std::string> extensions)
+    {
+        std::vector<std::string> file_names;
+        auto all_fles = list_dir (p, FileType::FILE);
+        auto to_lower = [] (std::string  s)->std::string
+        {
+            std::transform (s.begin(), s.end(), s.begin(), [] (unsigned char c) {return std::tolower (c); });
+            return s;
+        };
+        
+        for (auto&f : all_fles)
+        {
+            auto lower_extension = to_lower (path (f).extension());
+            
+            for (auto &e : extensions)
+            {
+                if (e == lower_extension)
+                {
+                    file_names.push_back (f);
+                }
+            }
+        }
+        
+        return file_names;
+    }
+    
+    inline std::vector<std::string> list_dir (const path&p, std::string extension)
+    {
+        return list_dir (p, std::vector<std::string> {extension});
+    }
 }
 
 #endif // !JH_PATH_H_

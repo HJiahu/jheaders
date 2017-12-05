@@ -41,7 +41,27 @@ namespace jheaders
         return (prefix.size() <= s.size()) && std::mismatch (prefix.begin(), prefix.end(), s.begin()).first == prefix.end();
     }
     
-    //删除字符串最右侧的space
+    template <class Op>
+    void split (const std::string &s, char delim, Op op)
+    {
+        std::stringstream ss (s);
+        
+        for (std::string item; std::getline (ss, item, delim);)
+        {
+            if (item.size() != 0)
+            { *op++ = item; }
+        }
+    }
+    
+    
+    inline std::vector<std::string> split (const std::string &s, char delim)
+    {
+        std::vector<std::string> elems;
+        split (s, delim, std::back_inserter (elems));
+        return elems;
+    }
+    
+    //删除字符串最右侧的 space
     inline void rtrim (std::string &s)
     {
         s.erase (std::find_if (s.rbegin(), s.rend(), [] (int c) {return !std::isspace (c); }).base(), s.end());
@@ -51,7 +71,7 @@ namespace jheaders
     {
         s.erase (s.begin(), find_if (s.begin(), s.end(), [] (int c) {return !std::isspace (c); }));
     }
-    //删除两侧的space
+    //删除两侧的 space
     inline void trim (std::string &s)
     {
         ltrim (s);
@@ -60,19 +80,16 @@ namespace jheaders
     
     inline void toupper (std::string &s)
     {
-        std::transform (s.begin(), s.end(), s.begin(), std::toupper);
+        std::transform (s.begin(), s.end(), s.begin(), [] (unsigned char c) {return std::toupper (c); });
     }
     
     inline void tolower (std::string &s)
     {
-        std::transform (s.begin(), s.end(), s.begin(), std::tolower);
+        std::transform (s.begin(), s.end(), s.begin(), [] (unsigned char c) {return std::tolower (c); });
     }
     
-    //------------------------------------------------------------------------------
-    // Name: implode
-    // Desc: join elements with a char
-    //------------------------------------------------------------------------------
-    inline std::string implode (char glue, const std::vector<std::string> &pieces)
+    
+    inline std::string join_str (char glue, const std::vector<std::string> &pieces)
     {
         std::string s;
         
@@ -90,11 +107,8 @@ namespace jheaders
         return s;
     }
     
-    //------------------------------------------------------------------------------
-    // Name: implode
-    // Desc: join elements with a string
-    //------------------------------------------------------------------------------
-    inline std::string implode (const std::string &glue, const std::vector<std::string> &pieces)
+    
+    inline std::string join_str (const std::string &glue, const std::vector<std::string> &pieces)
     {
         std::string s;
         
@@ -111,165 +125,6 @@ namespace jheaders
         
         return s;
     }
-    
-    //------------------------------------------------------------------------------
-    // Name: explode
-    //------------------------------------------------------------------------------
-    inline std::vector<std::string> explode (const std::string &delimeter, const std::string &string, int limit)
-    {
-        std::vector<std::string> r;
-        
-        if (!string.empty())
-        {
-            if (limit >= 0)
-            {
-                if (limit == 0)
-                {
-                    limit = 1;
-                }
-                
-                size_t first = 0;
-                size_t last = string.find (delimeter);
-                
-                while (last != std::string::npos)
-                {
-                    if (--limit == 0)
-                    {
-                        break;
-                    }
-                    
-                    r.emplace_back (string.substr (first, last - first));
-                    first = last + delimeter.size();
-                    last = string.find (delimeter, last + delimeter.size());
-                }
-                
-                r.emplace_back (string.substr (first));
-            }
-            
-            else
-            {
-                size_t first = 0;
-                size_t last = string.find (delimeter);
-                
-                while (last != std::string::npos)
-                {
-                    r.emplace_back (string.substr (first, last - first));
-                    first = last + delimeter.size();
-                    last = string.find (delimeter, last + delimeter.size());
-                }
-                
-                r.emplace_back (string.substr (first));
-                
-                while (limit < 0)
-                {
-                    r.pop_back();
-                    ++limit;
-                }
-            }
-        }
-        
-        return r;
-    }
-    
-    //------------------------------------------------------------------------------
-    // Name: explode
-    //------------------------------------------------------------------------------
-    inline std::vector<std::string> explode (const std::string &delimeter, const std::string &string)
-    {
-        return explode (delimeter, string, std::numeric_limits<int>::max());
-    }
-    
-    //------------------------------------------------------------------------------
-    // Name: explode
-    //------------------------------------------------------------------------------
-    inline std::vector<std::string> explode (char delimeter, const std::string &string, int limit)
-    {
-        std::vector<std::string> r;
-        
-        if (!string.empty())
-        {
-            if (limit >= 0)
-            {
-                if (limit == 0)
-                {
-                    limit = 1;
-                }
-                
-                size_t first = 0;
-                size_t last = string.find (delimeter);
-                
-                while (last != std::string::npos)
-                {
-                    if (--limit == 0)
-                    {
-                        break;
-                    }
-                    
-                    r.emplace_back (string.substr (first, last - first));
-                    first = last + 1;
-                    last = string.find (delimeter, last + 1);
-                }
-                
-                r.emplace_back (string.substr (first));
-            }
-            
-            else
-            {
-                size_t first = 0;
-                size_t last = string.find (delimeter);
-                
-                while (last != std::string::npos)
-                {
-                    r.emplace_back (string.substr (first, last - first));
-                    first = last + 1;
-                    last = string.find (delimeter, last + 1);
-                }
-                
-                r.emplace_back (string.substr (first));
-                
-                while (limit < 0)
-                {
-                    r.pop_back();
-                    ++limit;
-                }
-            }
-        }
-        
-        return r;
-    }
-    
-    //------------------------------------------------------------------------------
-    // Name: explode
-    //------------------------------------------------------------------------------
-    inline std::vector<std::string> explode (char delimeter, const std::string &string)
-    {
-        return explode (delimeter, string, std::numeric_limits<int>::max());
-    }
-    
-    //------------------------------------------------------------------------------
-    // Name: split
-    //------------------------------------------------------------------------------
-    template <class Op>
-    void split (const std::string &s, char delim, Op op)
-    {
-        std::stringstream ss (s);
-        
-        for (std::string item; std::getline (ss, item, delim);)
-        {
-            *op++ = item;
-        }
-    }
-    
-    //------------------------------------------------------------------------------
-    // Name: split
-    //------------------------------------------------------------------------------
-    inline std::vector<std::string> split (const std::string &s, char delim)
-    {
-        std::vector<std::string> elems;
-        split (s, delim, std::back_inserter (elems));
-        return elems;
-    }
-    
 }
 
 #endif // !JH_STRING_UTILS_H_
