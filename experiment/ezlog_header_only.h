@@ -301,29 +301,31 @@ namespace jheaders
     
     inline std::string current_time_YMDT()
     {
-        auto now = std::chrono::system_clock::now();
-        auto in_time_t = std::chrono::system_clock::to_time_t (now);
-        std::stringstream ss;
-#ifdef _MSC_VER
-        struct tm tm_;
-        localtime_s (&tm_, &in_time_t);
-        ss << std::put_time (&tm_, "%Y-%m-%d %X");
-else
-       char datetime[99];
-	struct tm current_time;
-	localtime_r (&in_time_t, &current_time);
+        char datetime[99];
+        time_t current_t = time (nullptr);
+        struct tm current_time;
+#if defined(_WIN32) || defined(_WIN64)
+        localtime_s (&current_time, &current_t);
+        sprintf_s (datetime, \
+                   "%d-%02d-%02d %02d:%02d:%02d", \
+                   1900 + current_time.tm_year, \
+                   1 + current_time.tm_mon, \
+                   current_time.tm_mday, \
+                   current_time.tm_hour, \
+                   current_time.tm_min, \
+                   current_time.tm_sec);
+#elif defined(__unix__) || defined(__unix) || defined(__APPLE__)
+        localtime_r (&current_t, &current_time);
         sprintf (datetime, \
-                  "%d-%02d-%02d %02d:%02d:%02d", \
-                  1900 + current_time.tm_year, \
-                  1 + current_time.tm_mon, \
-                  current_time.tm_mday, \
-                  current_time.tm_hour, \
-                  current_time.tm_min, \
-                  current_time.tm_sec);
-	ss<<datetime;
-       // ss << std::put_time (std::localtime (&in_time_t), "%Y-%m-%d %X");
-#endif // _MSC_VER
-        return ss.str();
+                 "%d-%02d-%02d %02d:%02d:%02d", \
+                 1900 + current_time.tm_year, \
+                 1 + current_time.tm_mon, \
+                 current_time.tm_mday, \
+                 current_time.tm_hour, \
+                 current_time.tm_min, \
+                 current_time.tm_sec);
+#endif
+        return std::string (datetime);
     }
     
     static EZlog ezlog_instance_g_;
