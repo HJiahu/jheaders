@@ -2,6 +2,7 @@
 #define EZLOG_TRANDITION_H_
 
 #include<cstdio>
+
 #include<ctime>
 #include<iostream>
 #include<string>
@@ -10,6 +11,7 @@
 #include<mutex>
 #include<memory>
 #include<atomic>
+#include<iomanip>
 #include"3rdparty/termcolor.h"
 
 namespace jheaders
@@ -27,7 +29,6 @@ namespace jheaders
 #endif //EZLOG_DEBUG_DO_NOTHING
     
 #define EZAssert(expr) bool(expr) || EZLOG(jheaders::Log_level::FATAL)<<"assert failed: "#expr<<". msg: "
-    
     //small help functions
     //return a string like: 2017-11-27 17:33:52
     inline std::string current_time_YMDT();
@@ -297,33 +298,20 @@ namespace jheaders
         return ptr; // ptr's life just in one scope
     }
     
+    
     inline std::string current_time_YMDT()
     {
-        char datetime[99];
-        time_t current_t = time (nullptr);
-        struct tm current_time;
-#if defined(_MSC_VER)
-        localtime_s (&current_time, &current_t);
-        sprintf_s (datetime, \
-                   "%d-%02d-%02d %02d:%02d:%02d", \
-                   1900 + current_time.tm_year, \
-                   1 + current_time.tm_mon, \
-                   current_time.tm_mday, \
-                   current_time.tm_hour, \
-                   current_time.tm_min, \
-                   current_time.tm_sec);
+        auto now = std::chrono::system_clock::now();
+        auto in_time_t = std::chrono::system_clock::to_time_t (now);
+        std::stringstream ss;
+#ifdef _MSC_VER
+        struct tm tm_;
+        localtime_s (&tm_, &in_time_t);
+        ss << std::put_time (&tm_, "%Y-%m-%d %X");
 #else
-        localtime_r (&current_t, &current_time);
-        sprintf (datetime, \
-                 "%d-%02d-%02d %02d:%02d:%02d", \
-                 1900 + current_time.tm_year, \
-                 1 + current_time.tm_mon, \
-                 current_time.tm_mday, \
-                 current_time.tm_hour, \
-                 current_time.tm_min, \
-                 current_time.tm_sec);
-#endif
-        return std::string (datetime) + " ";
+        ss << std::put_time (std::localtime (&in_time_t), "%Y-%m-%d %X");
+#endif // _MSC_VER
+        return ss.str();
     }
     
     static EZlog ezlog_instance_g_;
@@ -389,6 +377,7 @@ namespace jheaders
         
         return s_;
     }
+    
 }//namespace
 
 
