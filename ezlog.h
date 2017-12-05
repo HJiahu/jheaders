@@ -11,14 +11,14 @@
 #include<memory>
 #include"3rdparty/termcolor.h"
 
-//when use EZlog, must add this macro INIT_EZLOG in one cpp file (only in one cpp file)
-//like:
+//when use EZlog, must add macro INIT_EZLOG in one cpp file (only in one cpp file)
+//like this:
 //	#include"ezlog.h"
 //	INIT_EZLOG
 #define INIT_EZLOG      \
 jheaders::EZlog* jheaders::EZlog::log_instance_; \
-std::string jheaders::EZlog::log_file_; \
-std::ofstream jheaders::EZlog::log_file_stream_;\
+std::string jheaders::EZlog::log_file_{LOG_FILE_NAME}; \
+std::ofstream jheaders::EZlog::log_file_stream_{log_file_};\
 std::mutex jheaders::EZlog::log_file_mutex_;\
 std::mutex jheaders::EZlog::console_mutex_;
 
@@ -27,6 +27,8 @@ namespace jheaders
     //usage: EZLOG(level)<<"hello"<<"word"<<"!";
     //Macro EZLOG depends on EZlog::log() and will append file and line number where EZLOG was called
 #define EZLOG(level) jheaders::EZlog::create_logstream(level,std::string(" [")+__FILE__+": "+std::to_string(__LINE__)+"]")
+    ////usage: EZLOG(info)<<...  or EZLOG(fatal)<<... and so on ,level_str can be: info, debug, warn, error, fatal
+#define EZLOG_(level_str) EZLOG([]{for(int i=0;;i++){if(i == static_cast<int>(Log_level_fullname::level_str))return static_cast<Log_level>(i);}}())
     
 #ifdef _DEBUG
     #define EZLOG_D(msg) jheaders::EZlog::Instance().log_debug(msg+std::string(" [")+__FILE__+": "+std::to_string(__LINE__)+"]")
@@ -41,14 +43,16 @@ namespace jheaders
     
     /****** configures ******/
     //logs will be storaged in file LOG_FILE_NAME
-    static const std::string LOG_FILE_NAME ("ezlog.log");
+    static const std::string LOG_FILE_NAME{ "ezlog.log" };
     
     //if defined this macro below ,all logs would not show on terminal.
     //#define NO_TERMINAL_DISP  //just storage msg in log file , do not show msg on terminal
     
-    //level less than LOG_LEVEL will not write into log file
+    //level less than LOG_LEVEL_THRES_ will not write into log file
     enum class Log_level { INFO, DBUG, WARN, ERR, FATAL};
-    const Log_level LOG_LEVEL = Log_level::INFO; //all log msg will write into log file as default
+    enum class Log_level_fullname {info, debug, warn, error, fatal};
+    const Log_level LOG_LEVEL_THRES_ = Log_level::INFO; //all log msg will write into log file as default
+    using LOG_LEVEL = Log_level;
     
     //if no define _DEBUG  macro, EZLOG_D (debug) will do nothing
     
@@ -87,24 +91,13 @@ namespace jheaders
                 }
                 
                 return *log_instance_;
-                /* //use double if and mutex to avoid race conditons
-                if(log_instance_ == nullptr){
-                	mutex.lock();
-                	if(log_instance_ == nullptr)
-                		log_instance_ = new EZlog;
-                	mutex.unlock();
-                	else return log_instance_;
-                }
-                else return *log_instance_;
-                
-                */
             }
             
             void log_info (const std::string& msg) //white
             {
                 std::string str (current_time_YMDT() + "[INFO]   " + msg);
                 
-                if (Log_level::INFO >= LOG_LEVEL)
+                if (Log_level::INFO >= LOG_LEVEL_THRES_)
                 {
                     writeline2logfile (str);
                 }
@@ -115,7 +108,7 @@ namespace jheaders
             {
                 std::string str (current_time_YMDT() + "[DEBUG]  " + msg);
                 
-                if (Log_level::DBUG >= LOG_LEVEL)
+                if (Log_level::DBUG >= LOG_LEVEL_THRES_)
                 {
                     writeline2logfile (str);
                 }
@@ -126,7 +119,7 @@ namespace jheaders
             {
                 std::string str (current_time_YMDT() + "[WARN]   " + msg);
                 
-                if (Log_level::WARN >= LOG_LEVEL)
+                if (Log_level::WARN >= LOG_LEVEL_THRES_)
                 {
                     writeline2logfile (str);
                 }
@@ -137,7 +130,7 @@ namespace jheaders
             {
                 std::string str (current_time_YMDT() + "[ERROR]  " + msg);
                 
-                if (Log_level::ERR >= LOG_LEVEL)
+                if (Log_level::ERR >= LOG_LEVEL_THRES_)
                 {
                     writeline2logfile (str);
                 }
@@ -148,7 +141,7 @@ namespace jheaders
             {
                 std::string str (current_time_YMDT() + "[FATAL]  " + msg);
                 
-                if (Log_level::FATAL >= LOG_LEVEL)
+                if (Log_level::FATAL >= LOG_LEVEL_THRES_)
                 {
                     writeline2logfile (str);
                 }
@@ -176,7 +169,9 @@ namespace jheaders
                 
                 else
                 {
-                    std::cout << termcolor::on_magenta << "can not write to log file:" << log_file_ << std::endl;
+                    writeline2console ("can not write to log file: " + log_file_, TERM_COLOR::ON_MAGENTA);
+                    //std::cout << termcolor::on_magenta << "can not write to log file:" << log_file_ << std::endl;
+                    std::cout << termcolor::reset;
                 };
                 
                 log_file_mutex_.unlock();
