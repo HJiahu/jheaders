@@ -1,6 +1,8 @@
 #ifndef JH_UTILS_H_
 #define JH_UTILS_H_
 
+//this header only use std libs
+
 namespace jheaders
 {
     class noncopyable

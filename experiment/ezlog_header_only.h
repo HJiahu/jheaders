@@ -20,7 +20,7 @@ namespace jheaders
     //Macro EZLOG depends on EZlog::log() and will append file and line number where EZLOG was called
 #define EZLOG(level) jheaders::EZlog::create_logstream(level,std::string(" [")+__FILE__+": "+std::to_string(__LINE__)+"]")
     ////usage: EZLOG(info)<<...  or EZLOG(fatal)<<... and so on ,level_str can be: info, debug, warn, error, fatal
-#define EZLOG_(level_str) EZLOG([]{for(int i=0;;i++){if(i == static_cast<int>(Log_level_fullname::level_str))return static_cast<Log_level>(i);}}())
+#define EZLOG_(level_str) EZLOG([]{for(int i=0;;i++){if(i == static_cast<int>(jheaders::Log_level_fullname::level_str))return static_cast<jheaders::Log_level>(i);}}())
     
 #ifdef _DEBUG
     #define EZLOG_D(msg) jheaders::EZlog::Instance().log_debug(msg+std::string(" [")+__FILE__+": "+std::to_string(__LINE__)+"]")
