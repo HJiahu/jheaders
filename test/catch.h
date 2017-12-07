@@ -13791,7 +13791,9 @@ int main (int argc, char * argv[])
 {
 #endif
     auto result = Catch::Session().run (argc, argv);
+#ifdef _MSC_VER
     system ("pause");
+#endif
     return result;
 }
 
