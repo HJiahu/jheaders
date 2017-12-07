@@ -2,7 +2,7 @@
 #define JH_LOCK_H_
 
 #include<atomic>
-#include"utils.h"
+#include"universal_utils.h"
 namespace jheaders
 {
     //spinlock is extracted from boost\smart_ptr\detail\spinlock_std_atomic.hpp

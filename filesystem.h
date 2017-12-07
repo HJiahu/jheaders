@@ -1,6 +1,8 @@
 ﻿#ifndef JH_PATH_H_
 #define JH_PATH_H_
 
+#include<memory>
+#include<fstream>
 #include<algorithm>
 #include<functional>
 #include"3rdparty/path.h"
@@ -28,6 +30,8 @@ namespace jheaders
     inline std::vector<std::string> list_dir (const path&p, std::string extension);
     //return file name with extension in extensions, extension has point
     inline std::vector<std::string> list_dir (const path&p, std::vector<std::string> extensions);
+    inline bool readfile2str (const path&p, std::string&dst_str); //read file (txt) to a string, string will be cleared before write
+    inline std::pair<std::shared_ptr<char>, unsigned long long>  readfile2mem (const path&p); //read file and write content to a memory block
     
     
     
@@ -252,6 +256,82 @@ namespace jheaders
     inline std::vector<std::string> list_dir (const path&p, std::string extension)
     {
         return list_dir (p, std::vector<std::string> {extension});
+    }
+    
+    inline bool readfile2str (const path&p, std::string&dst_str)
+    {
+        std::ifstream in;
+        
+        if (!exists (p) || !is_regular_file (p) || ! (in.open (p.string()), in.good()))
+        {
+            EZLOG_ (fatal) << "can not open file: " << p.string();
+        }
+        
+        std::string str;
+        in.seekg (0, std::ios::end);
+        unsigned long long file_size = in.tellg();
+        in.seekg (0, std::ios::beg);
+        
+        try
+        {
+            dst_str.resize (file_size);
+        }
+        
+        catch (std::exception &e)
+        {
+            EZLOG_ (fatal) << "can not resize str: " << file_size << " bytes. msg: " << e.what();
+        }
+        
+        in.read (&dst_str[0], file_size);
+        
+        if (!in)
+        {
+            EZLOG_ (fatal) << "read file failed: " << p.string();
+            //return{ ptr, unsigned long long (0) };
+        }
+        
+        else
+        {
+            return true;
+        }
+    }
+    
+    inline std::pair<std::shared_ptr<char>, unsigned long long> readfile2mem (const path&p)
+    {
+        std::ifstream in ;
+        
+        if (!exists (p) || !is_regular_file (p) || ! (in.open (p.string(), std::ifstream::binary), in.good()))
+        {
+            EZLOG_ (fatal) << "can not open file: " << p.string();
+        }
+        
+        std::shared_ptr<char> ptr (nullptr, [] (char *data) {delete[] data; });
+        in.seekg (0, std::ios::end);
+        unsigned long long file_size = in.tellg();
+        in.seekg (0, std::ios::beg);
+        
+        try
+        {
+            ptr.reset (new char[file_size]);
+        }
+        
+        catch (std::exception &e)
+        {
+            EZLOG_ (fatal) << "can not malloc mem: " << file_size << " bytes. msg: " << e.what();
+        }
+        
+        in.read (ptr.get(), file_size);
+        
+        if (!in)
+        {
+            EZLOG_ (fatal) << "read file failed: " << p.string();
+            return{ ptr, (unsigned long long) (0) };
+        }
+        
+        else
+        {
+            return{ ptr, file_size };
+        }
     }
 }
 
