@@ -12,7 +12,7 @@ namespace jh = jheaders;
 using namespace std;
 
 volatile unsigned long value_g = 0;
-jh::spinlock splock;
+jh::SpinLock splock;
 mutex mtx;
 
 template<typename lock_type>

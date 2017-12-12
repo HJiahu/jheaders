@@ -2,7 +2,6 @@
 #define EZLOG_TRANDITION_H_
 
 #include<cstdio>
-
 #include<ctime>
 #include<iostream>
 #include<string>
@@ -20,6 +19,7 @@ namespace jheaders
     //Macro EZLOG depends on EZlog::log() and will append file and line number where EZLOG was called
 #define EZLOG(level) jheaders::EZlog::create_logstream(level,std::string(" [")+__FILE__+": "+std::to_string(__LINE__)+"]")
     ////usage: EZLOG(info)<<...  or EZLOG(fatal)<<... and so on ,level_str can be: info, debug, warn, error, fatal
+	//enum class Log_level_fullname {info, debug, warn, error, fatal};
 #define EZLOG_(level_str) EZLOG([]{for(int i=0;;i++){if(i == static_cast<int>(jheaders::Log_level_fullname::level_str))return static_cast<jheaders::Log_level>(i);}}())
     
 #ifdef _DEBUG
@@ -32,7 +32,7 @@ namespace jheaders
     //small help functions
     //return a string like: 2017-11-27 17:33:52
     inline std::string current_time_YMDT();
-    inline std::string trim_time_str (const std::string &str, int type = 0);
+    inline std::string trim_time_str (const std::string &str, int type = 0);//use type to choose different action for time string
     /****** configures ******/
     //logs will be storaged in file LOG_FILE_NAME_PREFIX
     static const std::string LOG_FILE_NAME_PREFIX{ "ezlog_" };
@@ -85,6 +85,7 @@ namespace jheaders
                 
                 if (globale_loginfos_.cnt_ > 999)
                 {
+                    //there is a EZlog obj in every cpp file if the cpp file include this header
                     std::cerr << termcolor::on_magenta \
                               << "There are too many EZlog instance objs in your project,please use another log lib instead of ezlog." << std::endl;
                     getchar();

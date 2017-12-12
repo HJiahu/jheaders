@@ -5,59 +5,59 @@
 #include<fstream>
 #include<algorithm>
 #include<functional>
-#include"3rdparty/path.h"
+#include"3rdparty/Path.h"
 #include"ezlog.h"
 
 namespace jheaders
 {
-    using TinyPath::path;
+    using Path = TinyPath::path;
     
-    inline path current_path();
-    inline bool create_directory (const path& p);
-    inline bool is_directory (const path&p);
-    inline bool is_regular_file (const path&p);
-    inline size_t file_size (const path&p);
-    inline bool exists (const path&p);
+    inline Path current_path();
+    inline bool create_directory (const Path& p);
+    inline bool is_directory (const Path&p);
+    inline bool is_regular_file (const Path&p);
+    inline size_t file_size (const Path&p);
+    inline bool exists (const Path&p);
     enum class FileType { ALL, FILE, DIR };//type for list in list_d
     //for directory do not return . and ..
     //return file or dir name in folder p
-    inline std::vector<std::string> list_dir (const path& p, FileType type = FileType::FILE);
+    inline std::vector<std::string> list_dir (const Path& p, FileType type = FileType::FILE);
     //return regular file name with extend of suffix ,eg. *.jpg
     //use op to check file or dir name
-    inline std::vector<std::string> list_dir (const path&p, std::function<bool (const std::string) > op);
+    inline std::vector<std::string> list_dir (const Path&p, std::function<bool (const std::string) > op);
     //return file name with extension ,extension string eg .jpg .txt .log
     //auto convert file extension to lower eg .Jpg -> .jpg
-    inline std::vector<std::string> list_dir (const path&p, std::string extension);
+    inline std::vector<std::string> list_dir (const Path&p, std::string extension);
     //return file name with extension in extensions, extension has point
-    inline std::vector<std::string> list_dir (const path&p, std::vector<std::string> extensions);
-    inline bool readfile2str (const path&p, std::string&dst_str); //read file (txt) to a string, string will be cleared before write
-    inline std::pair<std::shared_ptr<char>, unsigned long long>  readfile2mem (const path&p); //read file and write content to a memory block
+    inline std::vector<std::string> list_dir (const Path&p, std::vector<std::string> extensions);
+    inline bool readfile2str (const Path&p, std::string&dst_str); //read file (txt) to a string, string will be cleared before write
+    inline std::pair<std::shared_ptr<char>, unsigned long long>  readfile2mem (const Path&p); //read file and write content to a memory block
     
     
     
     /****************    implementtion     ****************/
-    inline path current_path()
+    inline Path current_path()
     {
-        return path::getcwd();
+        return Path::getcwd();
     }
     
-    inline bool is_directory (const path&p)
+    inline bool is_directory (const Path&p)
     {
         return p.is_directory();
     }
-    inline bool is_regular_file (const path&p)
+    inline bool is_regular_file (const Path&p)
     {
         return p.is_file();
     }
-    inline size_t file_size (const path&p)
+    inline size_t file_size (const Path&p)
     {
         return p.file_size();
     }
-    inline bool exists (const path&p)
+    inline bool exists (const Path&p)
     {
         return p.exists();
     }
-    inline bool create_directory (const path& p)
+    inline bool create_directory (const Path& p)
     {
 #if defined(_WIN32)
         return CreateDirectoryW (p.wstr().c_str(), NULL) != 0;
@@ -69,7 +69,7 @@ namespace jheaders
 #if defined(_WIN32)
     //for directory do not return . and ..
 #include <windows.h>
-    inline std::vector<std::string> list_dir (const path& p, FileType type)
+    inline std::vector<std::string> list_dir (const Path& p, FileType type)
     {
         if (!exists (p))
         {
@@ -155,13 +155,13 @@ namespace jheaders
 #else
 #include<dirent.h>
     //for directory do not return . and ..
-    inline std::vector<std::string> list_dir (const path &dir_path, FileType type)
+    inline std::vector<std::string> list_dir (const Path &dir_path, FileType type)
     {
         std::vector<std::string> files;
     
         if (!exists (dir_path))
         {
-            EZLOG (Log_level::ERR) << "no such file or path: " << dir_path.string();
+            EZLOG (Log_level::ERR) << "no such file or Path: " << dir_path.string();
             return files;
         }
     
@@ -175,7 +175,7 @@ namespace jheaders
                 continue;
             }
     
-            auto full_path = dir_path / path (std::string (dirp->d_name));
+            auto full_path = dir_path / Path (std::string (dirp->d_name));
     
             switch (type)
             {
@@ -211,7 +211,7 @@ namespace jheaders
     }
 #endif
     
-    inline std::vector<std::string> list_dir (const path&p, std::function<bool (const std::string) > op)
+    inline std::vector<std::string> list_dir (const Path&p, std::function<bool (const std::string) > op)
     {
         std::vector<std::string> file_names;
         auto all_fles = list_dir (p, FileType::ALL);
@@ -227,7 +227,7 @@ namespace jheaders
         return file_names;
     }
     
-    inline std::vector<std::string> list_dir (const path&p, std::vector<std::string> extensions)
+    inline std::vector<std::string> list_dir (const Path&p, std::vector<std::string> extensions)
     {
         std::vector<std::string> file_names;
         auto all_fles = list_dir (p, FileType::FILE);
@@ -239,7 +239,7 @@ namespace jheaders
         
         for (auto&f : all_fles)
         {
-            auto lower_extension = to_lower (path (f).extension());
+            auto lower_extension = to_lower (Path (f).extension());
             
             for (auto &e : extensions)
             {
@@ -253,12 +253,12 @@ namespace jheaders
         return file_names;
     }
     
-    inline std::vector<std::string> list_dir (const path&p, std::string extension)
+    inline std::vector<std::string> list_dir (const Path&p, std::string extension)
     {
         return list_dir (p, std::vector<std::string> {extension});
     }
     
-    inline bool readfile2str (const path&p, std::string&dst_str)
+    inline bool readfile2str (const Path&p, std::string&dst_str)
     {
         std::ifstream in;
         
@@ -296,7 +296,7 @@ namespace jheaders
         }
     }
     
-    inline std::pair<std::shared_ptr<char>, unsigned long long> readfile2mem (const path&p)
+    inline std::pair<std::shared_ptr<char>, unsigned long long> readfile2mem (const Path&p)
     {
         std::ifstream in ;
         

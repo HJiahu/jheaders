@@ -24,7 +24,7 @@ TEST_CASE ("test filesystem readfile2mem")
     
     auto file_info = jh::readfile2mem (file_path);
     REQUIRE (file_info.first != nullptr);
-    REQUIRE (file_info.second == jh::path (file_path).file_size());
+    REQUIRE (file_info.second == jh::Path (file_path).file_size());
 }
 
 TEST_CASE ("test filesystem readfile2str")

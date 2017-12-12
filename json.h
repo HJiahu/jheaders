@@ -15,18 +15,18 @@
         #define JSON_WITHOUT_CPP11
         #include"3rdparty/picojson.h"
     #else
-        #include"3rdparty/json.hpp"
+        #include"3rdparty/Json.hpp"
     #endif
 #elif defined(__GNUC__)
     #if (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__) < 40900
         #define JSON_WITHOUT_CPP11
         #include"3rdparty/picojson.h"
     #else
-        #include"3rdparty/json.hpp"
+        #include"3rdparty/Json.hpp"
     #endif
 #elif defined(_MSC_VER)// just support vs2015 or above
     #ifndef JSON_WITHOUT_CPP11
-        #include"3rdparty/json.hpp"
+        #include"3rdparty/Json.hpp"
     #else
         #include"3rdparty/picojson.h"
     #endif // !JSON_WITHOUT_CPP11
@@ -35,25 +35,25 @@
 namespace jheaders
 {
 #ifndef JSON_WITHOUT_CPP11
-    using nlohmann::json;
-    //json without nest，just key and value（int,float,double,string）
+    using Json = nlohmann::json;
+    //Json without nest，just key and value（int,float,double,string）
     inline std::map<std::string, std::string> parse_simple_json_str (const std::string&json_str)
     {
-        json jn;
+        Json jn;
         
         try
         {
-            jn = json::parse (json_str.c_str());
+            jn = Json::parse (json_str.c_str());
         }
         
         catch (std::exception &e)
         {
-            EZLOG (Log_level::FATAL) << "parse json string failed: " << e.what();
+            EZLOG (Log_level::FATAL) << "parse Json string failed: " << e.what();
         }
         
         std::map<std::string, std::string> results;
         
-        for (json::iterator it = jn.begin(); it != jn.end(); ++it)
+        for (Json::iterator it = jn.begin(); it != jn.end(); ++it)
         {
             std::string key = it.key();
             std::string value = it.value().dump();
@@ -105,7 +105,7 @@ namespace jheaders
     }
     
 #endif // !JSON_WITHOUT_CPP11
-    //json without nest，just key and value（int,float,double,string）
+    //Json without nest，just key and value（int,float,double,string）
     inline std::map<std::string, std::string> parse_simple_json (const std::string & json_file_path)
     {
         std::ifstream in (json_file_path);

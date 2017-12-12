@@ -28,7 +28,7 @@ namespace jheaders
 
 
     //spinlock is extracted from boost\smart_ptr\detail\spinlock_std_atomic.hpp
-    class spinlock : public noncopyable
+    class SpinLock : public NonCopyable
     {
         public:
         
