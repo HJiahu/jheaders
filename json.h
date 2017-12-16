@@ -34,6 +34,13 @@
 
 namespace jheaders
 {
+    inline std::map<std::string, std::string> parse_simple_json_str (const std::string&json_str);
+    inline std::map<std::string, std::string> parse_simple_json (const std::string & json_file_path);
+
+
+
+
+
 #ifndef JSON_WITHOUT_CPP11
     using Json = nlohmann::json;
     //Json without nest，just key and value（int,float,double,string）

@@ -1,4 +1,6 @@
 #include<cfloat>
+#include<cstdio>
+#include<fstream>
 #include"catch.h"
 #include"../json.h"
 
@@ -20,4 +22,16 @@ TEST_CASE("parse_simple_json_str") {
 	REQUIRE(fabs(stod(parse_result["double"])- stod("3.1415926")) <= DBL_MAX_EXP);
 	REQUIRE(parse_result["string"] == "hello,this is a test json");
 	REQUIRE(parse_result["empty_str"] == "");
+}
+
+
+TEST_CASE("parse_simple_json from file")
+{
+	char test_file_name[L_tmpnam];
+	tmpnam(test_file_name);
+	cout << "tmp file name: " << test_file_name << endl;
+	ofstream out(test_file_name);
+	out.write(a_json_str_for_test.c_str(), a_json_str_for_test.size());
+	out.close();
+	REQUIRE(parse_simple_json_str(a_json_str_for_test) == parse_simple_json(test_file_name));	
 }

@@ -8,9 +8,9 @@
 
 /*
 	this header has:
-	class noncopyable;
-	class noncopy_moveable;
-	class ScopeGuard
+		class noncopyable;
+		class noncopy_moveable;
+		class ScopeGuard
 */
 
 namespace jheaders

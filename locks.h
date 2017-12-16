@@ -57,9 +57,7 @@ namespace jheaders
                         
                         else
                             if (k < 32)
-                            {
-                                std::this_thread::sleep_for (std::chrono::microseconds (1));
-                            }
+                            { std::this_thread::yield(); }
                             
                             else
                             {
