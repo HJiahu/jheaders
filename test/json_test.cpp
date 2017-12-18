@@ -33,5 +33,5 @@ TEST_CASE("parse_simple_json from file")
 	ofstream out(test_file_name);
 	out.write(a_json_str_for_test.c_str(), a_json_str_for_test.size());
 	out.close();
-	REQUIRE(parse_simple_json_str(a_json_str_for_test) == parse_simple_json(test_file_name));	
+	REQUIRE(parse_simple_json_str(a_json_str_for_test) == parse_simple_json_from_file(test_file_name));	
 }

@@ -267,22 +267,9 @@ namespace jheaders
             EZLOG_ (fatal) << "can not open file: " << p.string();
         }
         
-        std::string str;
-        in.seekg (0, std::ios::end);
-        unsigned long long file_size = in.tellg();
-        in.seekg (0, std::ios::beg);
-        
-        try
-        {
-            dst_str.resize (file_size);
-        }
-        
-        catch (std::exception &e)
-        {
-            EZLOG_ (fatal) << "can not resize str: " << file_size << " bytes. msg: " << e.what();
-        }
-        
-        in.read (&dst_str[0], file_size);
+        std::stringstream buffer;
+        buffer << in.rdbuf();
+        dst_str = buffer.str();
         
         if (!in)
         {

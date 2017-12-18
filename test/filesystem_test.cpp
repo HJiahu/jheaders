@@ -29,11 +29,11 @@ TEST_CASE ("test filesystem readfile2mem")
 
 TEST_CASE ("test filesystem readfile2str")
 {
-    std::string file_path{ R"(D:\jheaders\jheaders\test\test_file_for_filesystem.txt)" };
+    std::string file_path{ R"(D:\jheaders\jheaders\test\test_files\test_file_for_filesystem.txt)" };
     
     if (!jh::exists (file_path))
     {
-        std::string file_in_test{ "./test_file_for_filesystem.txt" };
+        std::string file_in_test{ "./test_files/test_file_for_filesystem.txt" };
         
         if (jh::exists (file_in_test))
         {
@@ -42,7 +42,7 @@ TEST_CASE ("test filesystem readfile2str")
         
         else
         {
-            EZLOG_ (fatal) << R"(please a test file for TEST_CASE "test filesystem readfile2mem")";
+            EZLOG_ (fatal) << R"(please add a test file for TEST_CASE "test filesystem readfile2mem")";
         }
     }
     

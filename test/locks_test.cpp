@@ -49,6 +49,10 @@ TEST_CASE ("locks spinlock")
 {
     unsigned long increase_times = 10000000;
     unsigned long decrease_times = 10000000;
+#ifdef _DEBUG
+    increase_times /= 10;
+    decrease_times /= 10;
+#endif // _DEBUG
     //test for InvalidLock
     value_g = 0;
     chrono::system_clock::time_point iv_start = chrono::system_clock::now();

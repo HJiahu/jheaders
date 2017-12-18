@@ -35,7 +35,7 @@
 namespace jheaders
 {
     inline std::map<std::string, std::string> parse_simple_json_str (const std::string&json_str);
-    inline std::map<std::string, std::string> parse_simple_json (const std::string & json_file_path);
+    inline std::map<std::string, std::string> parse_simple_json_from_file(const std::string & json_file_path);
 
 
 
@@ -74,7 +74,7 @@ namespace jheaders
                 
                 else
                 {
-                    value = std::string (value.begin() + 1, value.end() - 1);
+                    value = std::string (value.begin() + 1, value.end() - 1);//delete " from string
                 }
             }
             
@@ -113,7 +113,7 @@ namespace jheaders
     
 #endif // !JSON_WITHOUT_CPP11
     //Json without nest，just key and value（int,float,double,string）
-    inline std::map<std::string, std::string> parse_simple_json (const std::string & json_file_path)
+    inline std::map<std::string, std::string> parse_simple_json_from_file (const std::string & json_file_path)
     {
         std::ifstream in (json_file_path);
         std::map<std::string, std::string> result;
