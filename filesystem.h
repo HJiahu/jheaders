@@ -5,6 +5,7 @@
 #include<fstream>
 #include<algorithm>
 #include<functional>
+#include<initializer_list>
 #include"3rdparty/path.h"
 #include"ezlog.h"
 
@@ -18,6 +19,9 @@ namespace jheaders
     inline bool is_regular_file (const Path&p);
     inline size_t file_size (const Path&p);
     inline bool exists (const Path&p);
+    inline bool copy_file (std::string &from, std::string &dst);//successfully copy file or die
+    inline bool copy_file2dir (std::string &from, std::string &dst_dir);//successfully copy file or die
+    inline std::string get_a_valid_path_or_die (const std::initializer_list<std::string> &paths);
     enum class FileType { ALL, FILE, DIR };//type for list in list_d
     //for directory do not return . and ..
     //return file or dir name in folder p
@@ -57,6 +61,39 @@ namespace jheaders
     {
         return p.exists();
     }
+    inline bool copy_file (std::string &from, std::string &dst)
+    {
+        if (!exists (from))
+        {
+            EZLOG_ (fatal) << "no such file: " << from;
+        }
+        
+        if (exists (dst))
+        {
+            EZLOG_ (fatal) << "already exists file: " << dst << "copy file failed.";
+        }
+        
+        std::ifstream  src_f (from, std::ios::binary);
+        std::ofstream  dst_f (dst, std::ios::binary);
+        dst_f << src_f.rdbuf();
+    }
+    
+    inline bool copy_file2dir (std::string &from, std::string &dst_dir)
+    {
+        if (!exists (from))
+        {
+            EZLOG_ (fatal) << "no such file: " << from;
+        }
+        
+        if (!exists (dst_dir) && !create_directory (dst_dir))
+        {
+            EZLOG_ (fatal) << "Can not create this dir: " << dst_dir;
+        }
+        
+        auto dst_file = Path (dst_dir) / Path (from).filename();
+        copy_file (from, dst_file.string());
+    }
+    
     inline bool create_directory (const Path& p)
     {
 #if defined(_WIN32)
@@ -319,6 +356,30 @@ namespace jheaders
         {
             return{ ptr, file_size };
         }
+    }
+    
+    inline std::ostream& operator<< (std::ostream&out, const std::initializer_list<std::string> &paths)
+    {
+        out << std::endl;
+        
+        for (auto&p : paths)
+        {
+            out << p << std::endl;
+        }
+        
+        return out;
+    }
+    inline std::string get_a_valid_path_or_die (const std::initializer_list<std::string> &paths)
+    {
+        for (auto&path : paths)
+        {
+            if (exists (path))
+            {
+                return path;
+            }
+        }
+        
+        EZLOG_ (fatal) << "no one path in paths is valid: " << paths;
     }
 }
 

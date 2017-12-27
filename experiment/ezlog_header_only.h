@@ -19,7 +19,7 @@ namespace jheaders
     //Macro EZLOG depends on EZlog::log() and will append file and line number where EZLOG was called
 #define EZLOG(level) jheaders::EZlog::create_logstream(level,std::string(" [")+__FILE__+": "+std::to_string(__LINE__)+"]")
     ////usage: EZLOG(info)<<...  or EZLOG(fatal)<<... and so on ,level_str can be: info, debug, warn, error, fatal
-	//enum class Log_level_fullname {info, debug, warn, error, fatal};
+    //enum class Log_level_fullname {info, debug, warn, error, fatal};
 #define EZLOG_(level_str) EZLOG([]{for(int i=0;;i++){if(i == static_cast<int>(jheaders::Log_level_fullname::level_str))return static_cast<jheaders::Log_level>(i);}}())
     
 #ifdef _DEBUG
@@ -71,8 +71,12 @@ namespace jheaders
             friend class Logstream;
             struct LogInfos
             {
-                std::string log_file_{ LOG_FILE_NAME_PREFIX + trim_time_str (current_time_YMDT(), 1) + ".log" };
-                std::ofstream log_file_stream_{ log_file_};
+#ifdef _DEBUG
+                std::string log_file_ { LOG_FILE_NAME_PREFIX + "debug" + ".log" };
+#else
+                std::string log_file_ { LOG_FILE_NAME_PREFIX + trim_time_str (current_time_YMDT(), 1) + ".log" };
+#endif
+                std::ofstream log_file_stream_ { log_file_, std::ofstream::app};
                 std::mutex log_file_mutex_;
                 std::mutex console_mutex_;
                 std::atomic_int cnt_;

@@ -7,8 +7,10 @@
 #include<sstream>
 #include"ezlog.h"
 
-//#define JSON_WITHOUT_CPP11
+#undef max
+#undef min
 
+//#define JSON_WITHOUT_CPP11
 // exclude unsupported compilers
 #if defined(__clang__)
     #if (__clang_major__ * 10000 + __clang_minor__ * 100 + __clang_patchlevel__) < 30400
@@ -35,12 +37,12 @@
 namespace jheaders
 {
     inline std::map<std::string, std::string> parse_simple_json_str (const std::string&json_str);
-    inline std::map<std::string, std::string> parse_simple_json_from_file(const std::string & json_file_path);
-
-
-
-
-
+    inline std::map<std::string, std::string> parse_simple_json_from_file (const std::string & json_file_path);
+    
+    
+    
+    
+    
 #ifndef JSON_WITHOUT_CPP11
     using Json = nlohmann::json;
     //Json without nest，just key and value（int,float,double,string）
