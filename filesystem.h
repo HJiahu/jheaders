@@ -19,8 +19,8 @@ namespace jheaders
     inline bool is_regular_file (const Path&p);
     inline size_t file_size (const Path&p);
     inline bool exists (const Path&p);
-    inline bool copy_file (std::string &from, std::string &dst);//successfully copy file or die
-    inline bool copy_file2dir (std::string &from, std::string &dst_dir);//successfully copy file or die
+    inline bool copy_file (const std::string &from, const std::string &dst); //successfully copy file or die
+    inline bool copy_file2dir (const std::string &from, const std::string &dst_dir); //successfully copy file or die
     inline std::string get_a_valid_path_or_die (const std::initializer_list<std::string> &paths);
     enum class FileType { ALL, FILE, DIR };//type for list in list_d
     //for directory do not return . and ..
@@ -31,9 +31,9 @@ namespace jheaders
     inline std::vector<std::string> list_dir (const Path&p, std::function<bool (const std::string) > op);
     //return file name with extension ,extension string eg .jpg .txt .log
     //auto convert file extension to lower eg .Jpg -> .jpg
-    inline std::vector<std::string> list_dir (const Path&p, std::string extension);
+    inline std::vector<std::string> list_dir (const Path&p, const std::string &extension);
     //return file name with extension in extensions, extension has point
-    inline std::vector<std::string> list_dir (const Path&p, std::vector<std::string> extensions);
+    inline std::vector<std::string> list_dir (const Path&p, const std::vector<std::string> &extensions);
     inline bool readfile2str (const Path&p, std::string&dst_str); //read file (txt) to a string, string will be cleared before write
     inline std::pair<std::shared_ptr<char>, unsigned long long>  readfile2mem (const Path&p); //read file and write content to a memory block
     
@@ -61,7 +61,7 @@ namespace jheaders
     {
         return p.exists();
     }
-    inline bool copy_file (std::string &from, std::string &dst)
+    inline bool copy_file (const std::string &from, const  std::string &dst)
     {
         if (!exists (from))
         {
@@ -78,7 +78,7 @@ namespace jheaders
         dst_f << src_f.rdbuf();
     }
     
-    inline bool copy_file2dir (std::string &from, std::string &dst_dir)
+    inline bool copy_file2dir (const std::string &from, const std::string &dst_dir)
     {
         if (!exists (from))
         {
@@ -264,7 +264,7 @@ namespace jheaders
         return file_names;
     }
     
-    inline std::vector<std::string> list_dir (const Path&p, std::vector<std::string> extensions)
+    inline std::vector<std::string> list_dir (const Path&p, const std::vector<std::string> &extensions)
     {
         std::vector<std::string> file_names;
         auto all_fles = list_dir (p, FileType::FILE);
@@ -290,7 +290,7 @@ namespace jheaders
         return file_names;
     }
     
-    inline std::vector<std::string> list_dir (const Path&p, std::string extension)
+    inline std::vector<std::string> list_dir (const Path&p, const std::string &extension)
     {
         return list_dir (p, std::vector<std::string> {extension});
     }

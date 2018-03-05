@@ -27,7 +27,7 @@ std::chrono::system_clock::time_point end = std::chrono::system_clock::now();\
 unsigned_int_millisecond =std::chrono::duration_cast<std::chrono::milliseconds>( end-start).count();\
 }
 
-    //创建之时即启动
+    //创建之时即开始计时
     class Timer: public NonCopyMoveable
     {
         public:
